@@ -7,76 +7,55 @@ import Chart from "./components/Chart";
 
 function App() {
   const [medicines, setMedicines] = useState([]);
-  const [search, setSearch] = useState([]);
+  const [search, setSearch] = useState("");
 
-  // 🔹 Fetch medicines
+  // 🔹 Fetch data
   useEffect(() => {
     fetchMedicines();
   }, []);
 
   const fetchMedicines = async () => {
-    try {
-      const res = await API.get("/medicine");
-      setMedicines(res.data);
-    } catch (err) {
-      console.error("Error fetching medicines:", err);
-    }
+    const res = await API.get("/medicine");
+    setMedicines(res.data);
   };
 
-  // ➕ Add medicine
+  // ➕ Add
   const addMedicine = async (data) => {
-    try {
-      await API.post("/medicine", data);
-      fetchMedicines();
-    } catch (err) {
-      console.error("Error adding medicine:", err);
-    }
+    await API.post("/medicine", data);
+    fetchMedicines();
   };
 
-  // ❌ Delete medicine
+  // ❌ Delete
   const deleteMedicine = async (id) => {
-    try {
-      await API.delete(`/medicine/${id}`);
-      fetchMedicines();
-    } catch (err) {
-      console.error("Error deleting medicine:", err);
-    }
+    await API.delete(`/medicine/${id}`);
+    fetchMedicines();
   };
 
-  // ✏️ Update medicine
+  // ✏️ Update
   const updateMedicine = async (id) => {
     const newPrice = prompt("Enter new price:");
     const newStock = prompt("Enter new stock:");
 
     if (!newPrice && !newStock) return;
 
-    try {
-      await API.put(`/medicine/${id}`, {
-        price: newPrice,
-        stock: newStock,
-      });
+    await API.put(`/medicine/${id}`, {
+      price: newPrice,
+      stock: newStock
+    });
 
-      fetchMedicines();
-    } catch (err) {
-      console.error("Error updating medicine:", err);
-    }
+    fetchMedicines();
   };
 
-  // 🔔 Expiry check (runs only when data changes)
+  // 🔔 ALERTS (expired medicines)
   useEffect(() => {
     const expired = medicines.filter(
       (med) => med.expiry && new Date(med.expiry) < new Date()
     );
 
     if (expired.length > 0) {
-      console.log(`⚠ ${expired.length} expired medicines found`);
+      alert(`⚠ ${expired.length} medicines are expired!`);
     }
   }, [medicines]);
-
-  // 🔍 FILTERED DATA (IMPORTANT FIX)
-  const filteredMedicines = medicines.filter((med) =>
-    med.name?.toLowerCase().includes(search.toLowerCase())
-  );
 
   return (
     <div
@@ -84,20 +63,20 @@ function App() {
         padding: "30px",
         fontFamily: "Arial",
         background: "#f5f5f5",
-        minHeight: "100vh",
+        minHeight: "100vh"
       }}
     >
       <h1 style={{ textAlign: "center" }}>Meditrack 💊</h1>
 
-      {/* 📊 Dashboard */}
+      {/* 📊 DASHBOARD */}
       <Dashboard medicines={medicines} />
 
-      {/* 📈 Chart */}
+      {/* 📈 CHART */}
       <div style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}>
         <Chart medicines={medicines} />
       </div>
 
-      {/* 🔍 Search */}
+      {/* 🔍 SEARCH */}
       <div style={{ textAlign: "center", marginBottom: "20px" }}>
         <input
           placeholder="Search medicine..."
@@ -107,12 +86,12 @@ function App() {
             padding: "10px",
             width: "250px",
             borderRadius: "5px",
-            border: "1px solid #ccc",
+            border: "1px solid #ccc"
           }}
         />
       </div>
 
-      {/* ➕ Form */}
+      {/* ➕ FORM */}
       <div
         style={{
           background: "white",
@@ -120,7 +99,7 @@ function App() {
           borderRadius: "10px",
           maxWidth: "400px",
           margin: "auto",
-          boxShadow: "0 0 10px rgba(0,0,0,0.1)",
+          boxShadow: "0 0 10px rgba(0,0,0,0.1)"
         }}
       >
         <MedicineForm addMedicine={addMedicine} />
@@ -128,18 +107,19 @@ function App() {
 
       <hr style={{ margin: "30px 0" }} />
 
-      {/* 📦 Medicine List (FILTER FIXED) */}
+      {/* 📦 LIST */}
       <div
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-          gap: "20px",
+          gap: "20px"
         }}
       >
         <MedicineList
-          medicines={filteredMedicines}
+          medicines={medicines}
           deleteMedicine={deleteMedicine}
           updateMedicine={updateMedicine}
+          search={search}
         />
       </div>
     </div>
