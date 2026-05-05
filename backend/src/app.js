@@ -8,7 +8,16 @@ import dashboardRoutes from "./routes/dashboard.routes.js";
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "https://meditrack.vercel.app",
+    /\.vercel\.app$/
+  ],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
